@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3>回忆的青春</h3>
+<label>菜单名称：</label><input type="text" name="menuname">
+<p/>
+<label>菜单类型：</label>
+<label><input type="radio" name="menutype" value="normal" checked>正常</label>
+<label><input type="radio" name="menutype" value="radio">单选</label>
+<label><input type="radio" name="menutype" value="checkbox">多选</label>
+<p/>
+<button onclick="addNewMenu()">添加一级菜单</button>
+<button onclick="addNewMenuItem()">添加一级菜单子项</button>
+</body>
+<script>
+    const {remote}=require('electron');
+    const {BrowserWindow,Menu,MenuItem,dialog}=require('electron').remote;
+
+    //let menu=new Menu()
+    let name=document.querySelector('input[name=menuname]')
+    let aRadio=document.querySelectorAll('input[type=radio]')
+    let typeMenu;
+
+    //一级菜单
+    function addNewMenu(){
+        //let menu=new Menu()
+        let template=[
+            {
+                label:'文件',
+                submenu:[
+                    {
+                        label:'新建文件',
+                        accelerator:'Ctrl+N',
+                        click:()=>{
+                            dialog.showOpenDialog()
+                        }
+                    }
+                ]
+            },
+            {
+                label:'编辑',
+                submenu:[
+                    {
+                        label:'撤销',
+                        role:'undo'
+                    },
+                    {
+                        label:'重做',
+                        role:'redo'
+                    }
+                ]
+            },
+            {
+                label:'自定义菜单',
+                submenu:customMenu
+            }
+        ]
+        //Menu.buildFromTemplate有返回值
+        let menu=Menu.buildFromTemplate(template)
+        //在顶级菜单中插入自定义的菜单项
+        Menu.setApplicationMenu(menu)
+    }
+
+    //动态的插入菜单项 首先顶级菜单项中有定制项的名称，然后在菜单项中加入子菜单submenu=》new Menu()
+    let customMenu=new Menu()
+    function addNewMenuItem(){
+        for(let i=0;i<aRadio.length;i++){
+            if(aRadio[i].checked){
+                typeMenu=aRadio[i].value;
+            }
+        }
+        let options
+        if(name.value!=''){
+            options={
+                label:name.value,
+                type:typeMenu
+            }
+            aRadio[0].checked=true;
+            name.value=''
+            //console.log(options)
+            //customMenu中是一级menu不能直接使用，要用MenuItem中插入项目才能使用menu
+            customMenu.append(new MenuItem(options));
+            Menu.setApplicationMenu(Menu.getApplicationMenu())
+        }
+
+    }
+
+
+</script>
+</html>

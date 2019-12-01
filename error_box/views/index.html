@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<button onclick="showErrorWin()">显示错误的弹窗</button>
+</body>
+<script>
+    const {remote}=require('electron')
+    const {BrowserWindow,dialog}=require('electron').remote;
+
+    function showErrorWin(){
+        /*let win=remote.getCurrentWindow()
+        dialog.showMessageBox(win,{
+            type:'error',
+            //buttons:'[1,2,3]',
+            title:'Error alert',
+            message:'sorry! checkout your code please, they are errors'
+        })*/
+        /*.then(ret=>{
+            console.log('succ',ret)
+        }).catch(err=>{
+            console.log('err',err)
+        })*/
+
+        //showMessageBox是异步的
+        //showErrorBox(title,contents) 这是简单的模式
+
+        dialog.showErrorBox('错误弹窗','this is error page')
+
+    }
+
+
+</script>
+</html>

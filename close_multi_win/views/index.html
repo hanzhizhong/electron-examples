@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3>关闭多个窗口</h3>
+<button onclick="openNewWin()">开启新窗口</button>
+<button onclick="closeNewWin()">关闭多个窗口</button>
+</body>
+<script>
+    const {remote}=require('electron');
+    const {BrowserWindow}=require('electron').remote;
+    const path=require('path')
+    global.winArr=[];
+    function openNewWin(){
+        let win=new BrowserWindow({
+            width:300,
+            height:200,
+            show:false,
+        });
+        win.loadURL(path.join(__dirname,'child.html'))
+        win.on('ready-to-show',()=>{
+            win.show()
+        });
+        win.on('closed',()=>{
+            win=null
+        })
+        global.winArr.push(win)
+    }
+
+    //关闭多个窗口
+    function closeNewWin(){
+        if(global.winArr.length>0){
+            for(let i=0;i<global.winArr.length;i++){
+                global.winArr[i].close()
+            }
+            global.winArr=[]
+        }else{
+            let win=remote.getCurrentWindow()
+            win.close()
+        }
+    }
+
+</script>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3>显示系统提示框 --不使用系统默认的icon</h3>
+<button onclick="showNormalDialog()">normal类型</button>
+<button onclick="showInfoDialog()">info类型</button>
+<button onclick="showWarnDialog()">warn类型</button>
+<button onclick="showErrorDialog()">error类型</button>
+<button onclick="showQuestionDialog()">question</button>
+<div class="img-box">
+
+</div>
+</body>
+
+<script>
+    const {remote}=require('electron')
+    const {dialog,nativeImage}=require('electron').remote;
+
+    let win=remote.getCurrentWindow();
+    let oBox=document.querySelector('.img-box');
+    //normal
+    function showNormalDialog(){
+        let oImg=document.createElement('img');
+        oImg.src="../../images/normal.png"
+        oBox.appendChild(oImg);
+        dialog.showMessageBox(win,{
+            type:'none',
+            title:'正常的信息提示框',
+            message:'hello world',
+
+            icon:nativeImage.createFromPath('/images/normal.png')
+        })
+    }
+    //info
+    function showInfoDialog(){
+
+        dialog.showMessageBox(win,{
+            type:'info',
+            title:'info信息提示框',
+            message:'nothing seek, nothing find',
+
+            icon:nativeImage.createFromPath('/images/normal.png')
+        })
+    }
+    //warn
+    function showWarnDialog(){
+        dialog.showMessageBox(win,{
+            type:'warning',
+            title:'warning信息提示框',
+            message:'你的样式',
+
+            icon:'../../images/warning.png'
+        })
+    }
+    //error
+    function showErrorDialog(){
+        dialog.showMessageBox(win,{
+            type:'error',
+            title:'error的错误提示框',
+            message:'this is error page',
+
+            icon:'../../images/error.png'
+        })
+
+    }
+    //question
+    function showQuestionDialog(){
+        dialog.showMessageBox(win,{
+            type:'question',
+            title:'question的提示框',
+            message:'12530,一按我帮您',
+            //更改图标
+            icon:'../../images/question.png'
+        })
+    }
+
+</script>
+</html>

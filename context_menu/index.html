@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h3>hello world</h3>
+    <label>显示右键菜单</label>
+</body>
+<script>
+    const {remote}=require('electron')
+    const Menu=remote.Menu
+    const MenuItem=remote.MenuItem
+
+    let menu=new Menu()
+    let menuOpenItem=new MenuItem({
+        click:()=>{
+            console.log('hello world')
+        },
+        label:'打开',
+        icon:'../images/meeting.png',
+    })
+    let menuAlbumItem=new MenuItem({
+        label:'相册',
+        icon:'../images/album.png'
+    })
+    let menuCopyItem=new MenuItem({
+        label:'拷贝'
+    })
+    let menuDelItem=new MenuItem({
+        label:'删除'
+    })
+    menu.append(menuOpenItem)
+    menu.append(menuDelItem)
+    menu.append(menuCopyItem)
+    menu.append(menuAlbumItem)
+
+    window.addEventListener('contextmenu',(e)=>{
+        e.stopPropagation()
+        let x=e.clientX;
+        let y=e.clientY;
+        menu.popup({x,y})
+    })
+
+</script>
+</html>

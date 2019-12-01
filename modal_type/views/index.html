@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3>使用模态框，就是子窗口一直在父窗口的前面,并且父窗口使用不了</h3>
+<button onclick="showSubWindow()">创建一个子窗口</button>
+</body>
+<script>
+    const {remote}=require('electron')
+    const {BrowserWindow}=require('electron').remote;
+    const path=require('path');
+
+    function showSubWindow(){
+        let win=remote.getCurrentWindow();
+        let subWin=new BrowserWindow({
+            width:300,
+            height:300,
+            parent:win,
+            modal:true,
+            show:false
+
+        })
+        subWin.on('ready-to-show',()=>{
+            subWin.show()
+        });
+        subWin.on('closed',()=>{
+            subWin=null
+        })
+        subWin.loadURL(path.join(__dirname,'child.html'))
+    }
+
+</script>
+</html>
