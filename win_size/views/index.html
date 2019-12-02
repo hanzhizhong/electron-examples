@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3>窗口大小的设置</h3>
+<button onclick="maximumWin(event)">最大化</button>
+<button onclick="minimumWin()">最小化</button>
+<button onclick="fullWinScreen(event)">全屏</button>
+<button onclick="getCurrWinScreenSize()">当前的窗口尺寸</button>
+
+</body>
+<script>
+    const {remote}=require('electron')
+    let win=remote.getCurrentWindow()
+
+    function maximumWin(event){
+        if(win.isMaximized()){
+            event.target.textContent="最大化"
+            win.unmaximize()
+        }else{
+            event.target.textContent="向下还原"
+            win.maximize()
+        }
+    }
+
+    function minimumWin(){
+        win.minimize()
+    }
+
+    function fullWinScreen(event){
+        if(win.isFullScreen()){
+            win.setFullScreen(false)
+            event.target.textContent="全屏"
+        }else{
+            win.setFullScreen(true)
+            event.target.textContent="向下还原"
+
+        }
+    }
+    function getCurrWinScreenSize(){
+        let result=win.getSize()//有边框的大小
+        let result2=win.getContentSize()//没有边框时的大小
+        let pos=win.getPosition()
+
+        console.log('result',result)
+        console.log('result2',result2)
+        console.log('pos',pos)
+
+    }
+</script>
+</html>

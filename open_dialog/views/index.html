@@ -11,20 +11,86 @@
 <h3>showOpenDialog 打开文件的使用</h3>
 <button onclick="openFileDialog()">打开文件对话框</button>
 <button onclick="openFileDialogByCondiation()">定制打开对话框</button>
-<button onclick="chooseFileExtent()">选择文件类型</button>
+<button onclick="chooseFileExtend()">选择文件类型</button>
 <button onclick="chooseFileContent()">选择文件目录</button>
 <button onclick="multipleChoose()">多选（文件/目录）</button>
 <button onclick="resultAfterChoose()">通过回调函数返回选择结果</button>
 <label id="label"></label>
 </body>
 <script>
+    const {remote}=require('electron')
+    const {dialog}=require('electron').remote
+    //获取当前的主窗口对象
+    let win = remote.getCurrentWindow();
     function openFileDialog(){
+        dialog.showOpenDialog(win,{
+            title:'单开文件',
+            defaultPath:'../../',
+            buttonLabel:'确定',
+            //windows平台上openFile和openDirectory是不能同时存在的
+            properties:['openFile','multiSelections','promptCreate'],
 
+        }).then(ret=>{
+            console.log(ret)
+        }).catch(err=>{
+            console.log('err',err)
+        })
     }
 
-    function openFileDialogByCondiation(){}
-    function chooseFileExtend(){}
-    function chooseFileContent(){}
+    function openFileDialogByCondiation(){
+        dialog.showOpenDialog(win,{
+            title:'有选择的文件类型',
+            buttonLabel:'确定',
+            defaultPath:'../../',
+            properties:['openFile','multiSelections','promptCreate'],
+            filters:[
+                {name:"Images",extensions:['jpg','jpeg','png']}
+            ]
+
+        }).then(ret=>{
+            console.log(ret)
+            for(let i=0;i<ret.filePaths.length;i++){
+                let oImg=document.createElement('img')
+                oImg.src=ret.filePaths[i];
+                label.appendChild(oImg)
+            }
+        }).catch(err=>{
+            console.log('err',err)
+        })
+    }
+    function chooseFileExtend(){
+        dialog.showOpenDialog(win,{
+            title:'可以选择所有的文件类型',
+            buttonLabel:'ok',
+            defaultPath:'../../',
+            properties:['openFile','multiSelections','promptCreate'],
+            filters:[
+                {
+                    name:'All Files',
+                    extensions:['*']
+                }
+            ]
+        }).then(ret=>{
+            console.log(ret)
+        }).catch(err=>{
+            console.log('err',err)
+        })
+    }
+    function chooseFileContent(){
+        dialog.showOpenDialog(win,{
+            title:'打开文件目录',
+            defaultPath:'../../',
+            buttonLabel:'ok',
+            properties:['openDirectory','multiSelections','promptCreate'],
+            filter:[
+                {name:'All Files',extensions:'*'}
+            ]
+        }).then(ret=>{
+            console.log(ret)
+        }).catch(err=>{
+            console.log('err',err)
+        })
+    }
     function multipleChoose(){
 
     }

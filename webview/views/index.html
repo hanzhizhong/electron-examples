@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .web-view{
+            width:400px;
+            height:300px;
+            border:1px solid #ccc;
+            display:inline-block;
+        }
+    </style>
+</head>
+<body>
+<h3>webview标签的使用 是不稳定的,要少用 在4.0.1的版本中webview不显示了，被禁用了</h3>
+<label id="label"></label>
+<webview id="foo" src="https://www.baidu.com/" style="display:inline-block; width:640px; height:480px" webpreferences="nativeWindowOpen=no"></webview>
+</body>
+<script>
+
+    const {remote}=require('electron')
+    const {BrowserView}=require('electron').remote;
+    function loadingStart(){
+        console.log('aaa')
+        label.innerText='loading...'
+    }
+    function loadingEnd(){
+        console.log('bbb')
+        label.innerText=''
+    }
+    let win=remote.getCurrentWindow()
+    let view=new BrowserView()
+
+    window.onload=function(){
+        win.setBrowserView(view)
+        view.setBounds({
+            x:0,
+            y:300,
+            width:400,
+            height:300
+        })
+        view.webContents.loadURL('https://www.baidu.com')
+        window.addEventListener('did-start-loading',loadingStart)
+        window.addEventListener('dit-stop-loading',loadingEnd)
+    }
+</script>
+</html>

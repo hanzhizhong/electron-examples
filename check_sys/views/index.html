@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" id="sysStyle">
+</head>
+<body>
+<h3>使用node的内置模块 os 检测系统的类型</h3>
+<h3>或者使用 electron 自带的每个进程都有的方法process.platform</h3>
+</body>
+<script>
+    const os=require('os')
+    console.log('process',process)
+    let sysStyle=document.querySelector('#sysStyle')
+    //console.log(os.platform())
+    window.onload=function(){
+        switch(os.platform()){
+            case 'win32':
+                sysStyle.href='./css/win.css';
+                break;
+            case 'linux':
+                sysStyle.href="./css/linux.css";
+                break;
+            case 'drawin':
+                sysStyle.href="./css/drawin.css"
+                break;
+            default:
+                sysStyle.href=""
+        }
+    }
+
+</script>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3>webFrame的类使用 模块允许你自定义如何渲染当前网页 .</h3>
+</body>
+<script>
+    const {remote,webFrame}=require('electron')
+    const {BrowserWindow,Menu,MenuItem}=require('electron').remote;
+
+    let win=remote.getCurrentWindow()
+    function customMenu(){
+        let template=[
+            {
+                label:'窗口',
+                submenu:[
+                    {
+                        label:'放大或缩小',
+                        submenu:[
+                            {
+                                label:'放大100%',
+                                click:()=>{
+                                    webFrame.setZoomFactor(1)
+                                }
+                            },
+                            {
+                                label:'放大200%',
+                                click:()=>{
+                                    webFrame.setZoomFactor(2)
+                                }
+                            },
+                            {
+                                label:'放大300%',
+                                click:()=>{
+                                    webFrame.setZoomFactor(3)
+                                }
+                            },
+                            {
+                                label:'放大400%',
+                                click:()=>{
+                                    webFrame.setZoomFactor(4)
+                                }
+                            },
+                            {
+                                type:'separator'
+                            },
+                            {
+                                label:'缩小75%',
+                                click:()=>{
+                                    webFrame.setZoomFactor(0.75)
+                                }
+                            },
+                            {
+                                label:'缩小50%',
+                                click:()=>{
+                                    webFrame.setZoomFactor(0.5)
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        label:'调试工具',
+                        role:'toggleDevTools'
+                    }
+                ]
+            }
+        ];
+
+        Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+
+    }
+
+    window.onload=function(){
+        customMenu()
+    }
+</script>
+</html>

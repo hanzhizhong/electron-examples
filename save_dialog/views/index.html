@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3>showSaveDialog 的保存对话框</h3>
+<button onclick="saveFileByClickBtn()">点击保存</button>
+</body>
+<script>
+    const {remote}=require('electron')
+    const fs=require('fs');
+    const path=require('path');
+    const {dialog}=require('electron').remote;
+    let win=remote.getCurrentWindow();
+    function saveFileByClickBtn(){
+        dialog.showSaveDialog(win,{
+            title:'保存为什么名字',
+            //defaultPath:'.',
+            /*filters:[
+                {name:'All Files',extensions:['*']}
+            ],*/
+            message:'hello world',
+            nameFieldLabel:'nothing seek, nothing find',
+            showTagField:'true',
+
+        }).then(ret=>{
+            let filename=path.basename(ret.filePath)
+            console.log(filename);
+            return new Promise((resolve,reject)=>{
+                let fileWriteObj=fs.createWriteStream(filename)
+                fileWriteObj.write('sdfaadfadf农大寄快递费')
+                fileWriteObj.on('finish',()=>{
+                    resolve('写入成功')
+                })
+                fileWriteObj.on('error',()=>{
+                    reject('文件写入失败')
+                })
+            })
+        }).then(ret=>{
+            console.log('ss',ret)
+        }).catch(err=>{
+            console.log('err',err)
+        })
+    }
+</script>
+</html>
