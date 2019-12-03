@@ -53,22 +53,25 @@
         init()
     }
 
+    //点击保存图片
     function savePic2Local(){
         let canvas=document.querySelector('canvas')
         let cxt=canvas.getContext('2d')
+        cxt.canvas.width=constraints.video.width;
+        cxt.canvas.height=constraints.video.height;
         cxt.drawImage(video,0,0,constraints.video.width,constraints.video.height)
-        let ret=canvas.toDataURL('image/png')
+        let ret=canvas.toDataURL('image/png').replace(/^data:image\/(png|jpeg|jpg|gif);base64,/gi,'');
         dialog.showSaveDialog(win,{
             title:'图片存储为:',
             message:'hello world',
             buttonLabel:'确定',
+            defaultPath:'../',
             filters:[
                 {name:'Images',extensions:['png','jpg','gif']}
             ]
-        }).then(ret=>{
-            console.log(ret)
-            let filename=path.basename(ret.filePath)
-            fs.writeFile(path.join(__dirname,`images/${filename}`),ret,(error)=>{
+        }).then(data=>{
+            let filename=path.basename(data.filePath)
+            fs.writeFile(path.join(__dirname,`images/${filename}`),ret,'base64',(error)=>{
                 if(error){
                     console.log('error',error)
                     return

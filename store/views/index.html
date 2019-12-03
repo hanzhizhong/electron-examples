@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .comment{
+            width:300px;
+            height:200px;
+            outline:none;
+        }
+    </style>
+</head>
+<body>
+<h3>localStorage的使用:本地存储</h3>
+<textarea class="comment" id="comment"></textarea>
+<button onclick="pusblishComments()">发布</button>
+</body>
+<script>
+
+    function pusblishComments(){
+        localStorage.setItem('publish',comment.value)
+    }
+    window.onload=function(){
+        comment.value=localStorage.getItem('publish')||'请输入发布的信息'
+    }
+</script>
+</html>
