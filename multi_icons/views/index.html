@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<h3>生成多尺寸的图片</h3>
+<button onclick="choosePicDialog()">选择图片</button>
+<div class="box">
+    <img src="" alt="">
+
+</div>
+<span>16*16</span>
+<div class="box">
+    <img src="" alt="">
+
+</div>
+<span>24*24</span>
+<div class="box">
+    <img src="" alt="">
+
+</div>
+<span>32*32</span>
+<div class="box">
+    <img src="" alt="">
+
+</div>
+<span>48*48</span>
+<div class="box">
+    <img src="" alt="">
+
+</div>
+<span>64*64</span>
+<div class="box">
+    <img src="" alt="">
+
+</div>
+<span>128*128</span>
+
+<div class="contain" draggable="true">拖拽</div>
+<div class="drop-contain">
+    文件在此释放
+</div>
+</body>
+<script>
+    const {remote}=require('electron')
+    const {dialog}=require('electron').remote;
+    let win=remote.getCurrentWindow()
+    let aImg=document.querySelectorAll('.box img');
+    console.log(aImg)
+    function choosePicDialog(){
+        dialog.showOpenDialog(win,{
+            title:'图片选择',
+            buttonLabel:'确定',
+            filters:[
+                {name:'Images',extensions:['png','jpg','ico','jpeg','gif']}
+            ],
+            properties:['openFile']
+        }).then(ret=>{
+            let result=ret.filePaths[0];
+            showPic(result)
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
+
+    function showPic(path){
+        for(let i=0;i<aImg.length;i++){
+            aImg[i].src=path;
+        }
+    }
+
+    //拖拽
+    let contain=document.querySelector('.contain')
+    let disX=0;
+    let disY=0;
+    contain.ondragstart=function(e){
+        disX=e.clientX-this.offsetLeft;
+        disY=e.clientY-this.offsetTop;
+        e.dataTransfer.setData('hello',e.target.innerHTML)
+    }
+    contain.ondragend=function(e){
+        this.style.left=e.clientX-disX+'px';
+        this.style.top=e.clientY-disY+'px';
+
+    }
+    contain.ondrop=function(e){
+        let ret=e.dataTransfer.getData('hello')
+        console.log(ret)
+    }
+    //文件的拖放
+    let dropContain=document.querySelector('.drop-contain')
+    window.ondragover=function(e){
+        e.preventDefault()
+    }
+    dropContain.ondrop=function(e){
+        console.log(e.dataTransfer.files)
+        showPic(e.dataTransfer.files[0].path)
+    }
+</script>
+</html>

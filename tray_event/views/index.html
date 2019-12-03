@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .words{
+            resize:none;
+            width:300px;
+            height:200px;
+        }
+    </style>
+</head>
+<body>
+    <h3>在渲染页面中加载托盘图标</h3>
+    <textarea name="word" class="words"></textarea>
+</body>
+<script>
+    const {remote}=require('electron')
+    const {Tray,Menu,MenuItem}=require('electron').remote;
+    const path=require('path');
+    let tray=null;
+    let menu=null;
+    let wordBox=document.querySelector('.words')
+    function addTrayIcon(){
+
+        tray=new Tray(path.resolve(__dirname,'../../images/test3.ico'));
+        menu=Menu.buildFromTemplate([
+            {
+                label:'设置'
+            },
+            {
+                label:'关于'
+            },
+            {
+                label:'退出'
+            }
+        ])
+
+        tray.setToolTip('index渲染页面的托盘')
+
+        tray.on('right-click',()=>{
+            tray.popUpContextMenu(menu)
+        })
+        tray.on('double-click',()=>{
+            wordBox.value="双击了"
+        })
+        tray.on('drop-text',(event,txt)=>{ //window系统不支持
+            console.log(event)
+            console.log(txt)
+        })
+        tray.on('mouse-move',(event,pos)=>{
+            console.log('event',event)
+            console.log('pos',pos)
+        })
+
+    }
+
+
+    window.onload=function(){
+        //tray.destory();
+        addTrayIcon()
+    }
+</script>
+</html>

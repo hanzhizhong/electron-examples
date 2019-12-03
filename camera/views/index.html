@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/iconfont.css">
+</head>
+<body>
+<h3>使用摄像头的功能</h3>
+<label>选择分辨率</label>
+<select name="pixel" id="pixel" onchange="choosePixelValue(event)">
+    <option value="400*300">400*300</option>
+    <option value="1000*600">1000*600</option>
+    <option value="1200*700">1200*700</option>
+    <option value="1400*800">1400*800</option>
+</select>
+<div class="contain">
+    <span onclick="savePic2Local()"><i class="iconfont iconcamera"></i></span>
+    <video></video>
+</div>
+<canvas style="display:none;"></canvas>
+</body>
+<script>
+    const {remote}=require('electron')
+    const {dialog}=require('electron').remote;
+    const fs=require('fs');
+    const path=require('path')
+
+    let video=document.querySelector('video');
+    let contain=document.querySelector('.contain');
+    let constraints={video:{width:400,height:300}}
+    let win=remote.getCurrentWindow();
+    function init(){
+        navigator.mediaDevices.getUserMedia(constraints).then(mediaStream=>{
+            video.srcObject=mediaStream;
+            video.onloadedmetadata=()=>{
+                video.play()
+            }
+        }).catch(err=>{
+            console.log('err',err)
+        })
+    }
+    function choosePixelValue(e){
+        let [width,height]=e.target.value.split('*')
+        constraints.video.width=width;
+        constraints.video.height=height;
+        contain.style.width=width+'px';
+        contain.style.height=height+'px';
+        init()
+    }
+
+    function savePic2Local(){
+        let canvas=document.querySelector('canvas')
+        let cxt=canvas.getContext('2d')
+        cxt.drawImage(video,0,0,constraints.video.width,constraints.video.height)
+        let ret=canvas.toDataURL('image/png')
+        dialog.showSaveDialog(win,{
+            title:'图片存储为:',
+            message:'hello world',
+            buttonLabel:'确定',
+            filters:[
+                {name:'Images',extensions:['png','jpg','gif']}
+            ]
+        }).then(ret=>{
+            console.log(ret)
+            let filename=path.basename(ret.filePath)
+            fs.writeFile(path.join(__dirname,`images/${filename}`),ret,(error)=>{
+                if(error){
+                    console.log('error',error)
+                    return
+                }
+                console.log('success')
+            })
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
+    window.onload=function(){
+        init()
+    }
+</script>
+</html>

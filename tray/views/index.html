@@ -19,34 +19,7 @@
     function setTrayByClick(){
         /*let image=nativeImage.createFromPath(path.join(__dirname,'../../images/paint.png'));
         console.log('image',image)*/
-        let tray=new Tray('../../images/test.ico')
-        let contextmenu=Menu.buildFromTemplate([
-            {
-                label:'设置',
-                click:()=>{
-                    dialog.showMessageBox(win,{
-                        title:'设置',
-                        buttons:['确定','取消'],
-                        message:'设置内容'
-                    })
-                }
-            },
-            {
-                label:'关于',
-                role:'about'
-            },
-            {
-                label:'帮助',
-                role:'help'
-            },
-            {
-                label:'退出',
-                role:'close'
-            }
-        ]);
-        tray.setContextMenu(contextmenu);
-        tray.setToolTip('这是一个托盘应用');
+        console.dir(Tray)
     }
-
 </script>
 </html>
