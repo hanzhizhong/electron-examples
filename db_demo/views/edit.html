@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../node_modules/art-template/lib/template-web.js"></script>
+</head>
+<body>
+<h3>edit页面</h3>
+<div class="edit-info"></div>
+<script type="text/html" id="edit">
+    <input type="text" name="_id" style="display:none;" value="{{result._id}}">
+    <input type="text" name="name" value="{{result.name}}">
+    <p></p>
+    <input type="text" name="age" value="{{result.age}}">
+    <p></p>
+    <input type="text" name="gender" value="{{result.gender}}">
+    <p></p>
+    <input type="text" name="classroom" value="{{result.classroom}}">
+    <p></p>
+</script>
+<button onclick="saveDataAndUpate()">保存</button>
+<button onclick="cancelEdit()">取消</button>
+</body>
+<script>
+    const {remote,ipcRenderer}=require('electron')
+    const {dialog}=require('electron').remote
+    const axios=require('axios')
+    axios.defaults.baseURL='http://localhost:8000/api/student'
+
+    function getInfoById(data){
+        let _id=data;
+        axios.get('/findOne',{params:{_id}}).then(ret=>{
+
+            let html=template('edit',{result:ret.data.data})
+            document.querySelector('.edit-info').innerHTML=html;
+        }).catch(err=>{
+            dialog.showErrorBox('error',`${err}`)
+        })
+    }
+
+    function saveDataAndUpate(){
+        let aInput=document.querySelectorAll('.edit-info input')
+        let options={}
+        Array.from(aInput).forEach((item,index)=>{
+            options[item.name]=item.value
+        })
+
+        axios.put('/edit',options).then(ret=>{
+            if(ret.data.err==0){
+                remote.getCurrentWindow().close()
+            }
+        }).catch(err=>{
+            dialog.showErrorBox('error',`${err}`)
+        })
+    }
+
+    window.onload=function(){
+
+        let data=localStorage.getItem('_id')
+        if(data!=null){
+            getInfoById(data)
+        }else{
+            ipcRenderer.on('edit',(event,data)=>{
+                if(data){
+                    localStorage.setItem('_id',data)
+                    getInfoById(data)
+                }
+            })
+        }
+    }
+</script>
+</html>
