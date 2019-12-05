@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../node_modules/art-template/lib/template-web.js"></script>
+    <style>
+        .error{
+            color:red;
+        }
+    </style>
+</head>
+<body>
+<h3>添加信息</h3>
+<div class="add-info">
+    <input type="text" name="name" onblur="checkNameData(event)" autofocus> <span class="error"></span>
+    <p></p>
+    <input type="text" name="age" onblur="checkAgeData(event)"><span class="error"></span>
+    <p></p>
+    <label>性别:</label>
+    <label><input type="radio" name="gender" value=false checked>女</label>
+    <label><input type="radio" name="gender" value=true>男</label>
+    <p></p>
+    <input type="text" name="classroom" >
+    <p></p>
+</div>
+<button onclick="saveDataAndSubmit()">保存</button>
+<button onclick="cancelAddInfo()">取消</button>
+</body>
+<script>
+    //引用模块
+    const path=require('path')
+    const axios=require('axios')
+    const {remote}=require('electron')
+    const {dialog}=require('electron').remote
+
+    axios.defaults.baseURL="http://localhost:8000/api/student"
+
+    let isNameCorrect=false
+    let isAgeCorrect=false;
+    //提交数据到数据库
+    function saveDataAndSubmit(){
+        if(isNameCorrect && isAgeCorrect){
+            let options={
+                name:document.querySelector('.add-info input[name=name]').value,
+                age:document.querySelector('.add-info input[name=age]').value,
+                gender:getGenderValue(),
+                classroom:document.querySelector('.add-info input[name=classroom]').value
+            }
+            axios.post('/add',options).then(ret=>{
+                console.log(ret)
+                if(ret.data.err==0){
+                    remote.getCurrentWindow().close()
+                }
+            }).catch(err=>{
+                dialog.showErrorBox('错误提示',`${err}`)
+            })
+        }
+    }
+    function cancelAddInfo(){
+        remote.getCurrentWindow().close()
+    }
+
+    //获取性别
+    function getGenderValue(){
+        let aGender=document.querySelectorAll('.add-info input[name=gender]')
+        for(let i=0;i<aGender.length;i++){
+            if(aGender[i].checked){
+                return eval(aGender[i].value)
+            }
+        }
+    }
+
+    //检查姓名的规范
+    function checkNameData(e){
+        let sVal=e.target.value;
+        if(sVal!=""){
+            isNameCorrect=true
+            e.target.nextElementSibling.textContent=""
+            return
+        }else{
+            isNameCorrect=false
+            e.target.nextElementSibling.textContent="姓名不能为空"
+        }
+    }
+    //检测年龄的规范
+    function checkAgeData(e){
+        let sVal=e.target.value;
+        if(sVal!=""){
+            if(/^[0-9]{1,2}$|^100$/gi.test(sVal)){
+                isAgeCorrect=true
+                e.target.nextElementSibling.textContent=""
+                return
+            }else{
+                isAgeCorrect=false
+                e.target.nextElementSibling.textContent="请输入数字类型或者不超过100"
+            }
+        }else{
+            isAgeCorrect=false
+            e.target.nextElementSibling.textContent="年龄不能为空"
+        }
+
+    }
+</script>
+</html>

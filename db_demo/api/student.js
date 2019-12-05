@@ -95,11 +95,19 @@ router.put('/edit',(req,res)=>{
     console.log(req.body)
     let {_id,name,age,gender,classroom}=req.body;
     Student.updateOne({_id},{$set:{name,age:Number(age),gender,classroom}}).then(ret=>{
-        res.json({
-            err:0,
-            msg:'修改成功了',
-            data:ret
-        })
+        if(ret.n==1){
+            res.json({
+                err:0,
+                msg:'修改成功了',
+                data:ret
+            })
+        }else{
+            res.json({
+                err:1,
+                msg:'没有找到对应_id项'
+            })
+        }
+
     }).catch(err=>{
         res.json({
             err:999,

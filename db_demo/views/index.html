@@ -45,7 +45,7 @@
             <tr>
                <td>{{$value.name}}</td>
                <td>{{$value.age}}</td>
-               <td>{{$value.gender}}</td>
+               <td>{{$value.gender|genderFormat}}</td>
                <td>{{$value.classroom}}</td>
                <td>{{$value.create_time|timeFormat}}</td>
                <td>
@@ -107,8 +107,12 @@
             editWin.webContents.send('edit',id)
         })
         editWin.on('closed',()=>{
-            init()
             editWin=null
+            win.moveTop()
+            init()
+            win.focus()
+
+
         })
     }
     //错误弹窗
@@ -129,6 +133,38 @@
 
         return year+'-'+month+'-'+dat
     }
+    function genderFormat(val){
+        switch(val.toString()){
+            case "true":
+                return '男'
+            case "false":
+                return '女'
+        }
+    }
+
+    //添加信息
+    function addStudentInfo(){
+        let addWin=new BrowserWindow({
+            width:400,
+            height:400,
+            show:false,
+            webPreferences:{nodeIntegration:true},
+            parent:win,
+            modal:true
+        });
+        addWin.loadURL(path.join(__dirname,'add.html'));
+        addWin.on('ready-to-show',()=>{
+            addWin.show()
+        })
+        addWin.on('closed',()=>{
+            addWin=null;
+            win.moveTop()
+            init()
+            win.focus()
+
+        })
+    }
+
     window.onload=function(){
         init();
     }

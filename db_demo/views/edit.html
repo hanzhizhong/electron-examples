@@ -7,17 +7,29 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <script src="../node_modules/art-template/lib/template-web.js"></script>
+    <style>
+        .error{
+            color:red;
+        }
+    </style>
 </head>
 <body>
 <h3>edit页面</h3>
 <div class="edit-info"></div>
 <script type="text/html" id="edit">
     <input type="text" name="_id" style="display:none;" value="{{result._id}}">
-    <input type="text" name="name" value="{{result.name}}">
+    <input type="text" name="name" onblur="checkNameData(event)" autofocus value="{{result.name}}"><span class="error"></span>
     <p></p>
-    <input type="text" name="age" value="{{result.age}}">
+    <input type="text" name="age" onblur="checkAgeData(event)" value="{{result.age}}"><span class="error"></span>
     <p></p>
-    <input type="text" name="gender" value="{{result.gender}}">
+    <label>性别:</label>
+    {{if result.gender}}
+    <label><input type="radio" name="gender" value="false" >女</label>
+    <label><input type="radio" name="gender" value="true" checked>男</label>
+    {{else}}
+    <label><input type="radio" name="gender" value="false" checked>女</label>
+    <label><input type="radio" name="gender" value="true" >男</label>
+    {{/if}}
     <p></p>
     <input type="text" name="classroom" value="{{result.classroom}}">
     <p></p>
@@ -31,10 +43,12 @@
     const axios=require('axios')
     axios.defaults.baseURL='http://localhost:8000/api/student'
 
+    let isNameCorrect=true
+    let isAgeCorrect=true;
+
     function getInfoById(data){
         let _id=data;
         axios.get('/findOne',{params:{_id}}).then(ret=>{
-
             let html=template('edit',{result:ret.data.data})
             document.querySelector('.edit-info').innerHTML=html;
         }).catch(err=>{
@@ -43,34 +57,72 @@
     }
 
     function saveDataAndUpate(){
-        let aInput=document.querySelectorAll('.edit-info input')
-        let options={}
-        Array.from(aInput).forEach((item,index)=>{
-            options[item.name]=item.value
-        })
-
-        axios.put('/edit',options).then(ret=>{
-            if(ret.data.err==0){
-                remote.getCurrentWindow().close()
+        if(isNameCorrect && isAgeCorrect){
+            let options={
+                _id:document.querySelector('.edit-info input[name=_id]').value,
+                name:document.querySelector('.edit-info input[name=name]').value,
+                age:document.querySelector('.edit-info input[name=age]').value,
+                gender:getGenderValue(),
+                classroom:document.querySelector('.edit-info input[name=classroom]').value
             }
-        }).catch(err=>{
-            dialog.showErrorBox('error',`${err}`)
-        })
-    }
-
-    window.onload=function(){
-
-        let data=localStorage.getItem('_id')
-        if(data!=null){
-            getInfoById(data)
-        }else{
-            ipcRenderer.on('edit',(event,data)=>{
-                if(data){
-                    localStorage.setItem('_id',data)
-                    getInfoById(data)
+            axios.put('/edit',options).then(ret=>{
+                if(ret.data.err==0){
+                    remote.getCurrentWindow().close()
                 }
+            }).catch(err=>{
+                dialog.showErrorBox('错误提示',`${err}`)
             })
         }
+    }
+    //取消编辑
+    function cancelEdit(){
+        remote.getCurrentWindow().close()
+    }
+    //检查姓名的规范
+    function checkNameData(e){
+        let sVal=e.target.value;
+        if(sVal!=""){
+            isNameCorrect=true
+            e.target.nextElementSibling.textContent=""
+            return
+        }else{
+            isNameCorrect=false
+            e.target.nextElementSibling.textContent="姓名不能为空"
+        }
+    }
+    //检测年龄的规范
+    function checkAgeData(e){
+        let sVal=e.target.value;
+        if(sVal!=""){
+            if(/^[0-9]{1,2}$|^100$/gi.test(sVal)){
+                isAgeCorrect=true
+                e.target.nextElementSibling.textContent=""
+                return
+            }else{
+                isAgeCorrect=false
+                e.target.nextElementSibling.textContent="请输入数字类型或者不超过100"
+            }
+        }else{
+            isAgeCorrect=false
+            e.target.nextElementSibling.textContent="年龄不能为空"
+        }
+
+    }
+    //获取性别
+    function getGenderValue(){
+        let aGender=document.querySelectorAll('.edit-info input[name=gender]')
+        for(let i=0;i<aGender.length;i++){
+            if(aGender[i].checked){
+                return eval(aGender[i].value)
+            }
+        }
+    }
+    window.onload=function(){
+        ipcRenderer.on('edit',(event,data)=>{
+            if(data){
+                getInfoById(data)
+            }
+        })
     }
 </script>
 </html>
